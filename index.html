@@ -26,12 +26,39 @@
           <a href="#jornada">A jornada</a>
           <a href="#sobre">Sobre</a>
           <a href="#faq">Dúvidas</a>
-          <a href="consultas.html">Área Interna</a>
         </nav>
-        <a class="btn btn-primary" href="#contato" style="padding: 11px 22px"
-          >Marcar consulta</a
+        <div class="hdr-actions">
+          <a
+            class="hdr-admin"
+            href="consultas.html"
+            title="Ver consultas recebidas"
+            aria-label="Área interna: consultas recebidas"
+          >
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <rect x="5" y="4" width="14" height="17" rx="2" />
+              <path d="M9 4V3h6v1M9 11h6M9 15h4" />
+            </svg>
+            <span>Área interna</span>
+            <b class="hdr-count" id="hdrCount" hidden>0</b>
+          </a>
+          <a class="btn btn-primary" href="#contato" style="padding: 11px 22px"
+            >Marcar consulta</a
+          >
+        </div>
+        <button
+          class="burger"
+          id="burger"
+          aria-label="Abrir menu"
+          aria-expanded="false"
+          aria-controls="mobileMenu"
         >
-        <button class="burger" id="burger" aria-label="Menu">
           <svg
             viewBox="0 0 24 24"
             fill="none"
@@ -47,7 +74,7 @@
 
     <div class="mobile-menu" id="mobileMenu">
       <div class="mm-panel">
-        <button class="mm-close" id="mmClose" aria-label="Fechar">
+        <button class="mm-close" id="mmClose" aria-label="Fechar menu">
           <svg
             viewBox="0 0 24 24"
             fill="none"
@@ -63,6 +90,7 @@
         <a href="#jornada">A jornada</a>
         <a href="#sobre">Sobre</a>
         <a href="#faq">Dúvidas</a>
+        <a href="consultas.html">Área interna</a>
         <a class="btn btn-primary" href="#contato">Marcar consulta online</a>
       </div>
     </div>
@@ -674,6 +702,14 @@
                 Em breve nossa equipe entra em contato para confirmar o melhor
                 horário. 💙
               </p>
+              <button
+                class="btn btn-outline"
+                type="button"
+                id="formAgain"
+                style="margin-top: 22px"
+              >
+                Enviar outra solicitação
+              </button>
             </div>
           </form>
         </div>
@@ -778,35 +814,131 @@
         hdr.classList.toggle("scrolled", scrollY > 20),
       );
       const mm = document.getElementById("mobileMenu");
-      document.getElementById("burger").onclick = () =>
+      const burger = document.getElementById("burger");
+      function abrirMenu() {
         mm.classList.add("open");
-      document.getElementById("mmClose").onclick = () =>
+        burger.setAttribute("aria-expanded", "true");
+        document.body.style.overflow = "hidden"; // trava o scroll da página por trás
+        document.getElementById("mmClose").focus();
+      }
+      function fecharMenu() {
+        if (!mm.classList.contains("open")) return;
         mm.classList.remove("open");
-      mm.querySelectorAll("a").forEach(
-        (a) => (a.onclick = () => mm.classList.remove("open")),
+        burger.setAttribute("aria-expanded", "false");
+        document.body.style.overflow = "";
+        burger.focus({ preventScroll: true });
+      }
+      burger.onclick = abrirMenu;
+      document.getElementById("mmClose").onclick = fecharMenu;
+      mm.querySelectorAll("a").forEach((a) =>
+        a.addEventListener("click", fecharMenu),
       );
       mm.onclick = (e) => {
-        if (e.target === mm) mm.classList.remove("open");
+        if (e.target === mm) fecharMenu();
       };
-      document.getElementById("contactForm").addEventListener("submit", (e) => {
+      addEventListener("keydown", (e) => {
+        if (e.key === "Escape") fecharMenu();
+      });
+      // se girar o celular / aumentar a janela com o menu aberto, fecha
+      matchMedia("(min-width:981px)").addEventListener("change", (e) => {
+        if (e.matches) fecharMenu();
+      });
+      // ===== Consultas: salvas no localStorage (demo, sem backend) =====
+      const CHAVE = "inspire_consultas";
+      function lerConsultas() {
+        try {
+          return JSON.parse(localStorage.getItem(CHAVE) || "[]");
+        } catch (e) {
+          return [];
+        }
+      }
+      function atualizarContador() {
+        const n = lerConsultas().filter((c) => c.status === "novo").length;
+        const b = document.getElementById("hdrCount");
+        b.textContent = n;
+        b.hidden = n === 0;
+      }
+      atualizarContador();
+      // se a área interna estiver aberta em outra aba e mudar algo, o contador acompanha
+      addEventListener("storage", (e) => {
+        if (e.key === CHAVE) atualizarContador();
+      });
+
+      const form = document.getElementById("contactForm");
+      const campo = (id) => document.getElementById(id);
+      const valor = (id) => campo(id).value.trim();
+
+      function marcarErro(id, texto) {
+        const f = campo(id).closest(".field");
+        f.classList.add("err");
+        const m = document.createElement("small");
+        m.className = "ferr";
+        m.textContent = texto;
+        f.appendChild(m);
+      }
+      function limparErros() {
+        form
+          .querySelectorAll(".field.err")
+          .forEach((f) => f.classList.remove("err"));
+        form.querySelectorAll(".ferr").forEach((m) => m.remove());
+      }
+      form.addEventListener("input", (e) => {
+        const f = e.target.closest(".field.err");
+        if (f) {
+          f.classList.remove("err");
+          f.querySelector(".ferr")?.remove();
+        }
+      });
+
+      form.addEventListener("submit", (e) => {
         e.preventDefault();
+        limparErros();
+        const nome = valor("nome"),
+          tel = valor("tel"),
+          email = valor("email");
+        let ok = true;
+        if (!nome) {
+          marcarErro("nome", "Informe seu nome.");
+          ok = false;
+        }
+        if (!tel && !email) {
+          marcarErro("tel", "Informe um telefone ou um e-mail para contato.");
+          ok = false;
+        } else if (email && !/^\S+@\S+\.\S+$/.test(email)) {
+          marcarErro("email", "Confira o e-mail digitado.");
+          ok = false;
+        }
+        if (!ok) {
+          form.querySelector(".field.err input")?.focus();
+          return;
+        }
+
         const nova = {
+          id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
           data: new Date().toISOString(),
-          nome: document.getElementById("nome").value || "(sem nome)",
-          email: document.getElementById("email").value || "—",
-          tel: document.getElementById("tel").value || "—",
-          servico: document.getElementById("motivo").value,
-          msg: document.getElementById("msg").value,
+          nome,
+          email,
+          tel,
+          servico: campo("motivo").value,
+          msg: valor("msg"),
           status: "novo",
         };
-        const lista = JSON.parse(
-          localStorage.getItem("inspire_consultas") || "[]",
-        );
+        const lista = lerConsultas();
         lista.unshift(nova);
-        localStorage.setItem("inspire_consultas", JSON.stringify(lista));
-        document.getElementById("formFields").style.display = "none";
-        document.getElementById("formOk").classList.add("show");
+        try {
+          localStorage.setItem(CHAVE, JSON.stringify(lista));
+        } catch (err) {}
+        atualizarContador();
+        campo("formFields").style.display = "none";
+        campo("formOk").classList.add("show");
       });
+
+      campo("formAgain").onclick = () => {
+        form.reset();
+        campo("formOk").classList.remove("show");
+        campo("formFields").style.display = "";
+        campo("nome").focus();
+      };
     </script>
   </body>
 </html>
