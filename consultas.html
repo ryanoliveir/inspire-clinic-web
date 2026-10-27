@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Consultas recebidas · Inspire</title>
+<link rel="icon" href="assets/inspire-favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&family=Newsreader:ital,opsz,wght@0,6..72,500;1,6..72,500&display=swap" rel="stylesheet">
+<style>
+:root{--navy:#15324f;--terra:#C25E2A;--orange:#E0813A;--sand:#F4EBDD;--sand-deep:#EADBC4;--cream:#FBF6EE;--ink:#2c2419;--muted:#7a6f5f;--line:#e6dcc9;--mint:#3f9c7c;--serif:"Newsreader",Georgia,serif}
+*{box-sizing:border-box}
+body{margin:0;font-family:"Lexend",system-ui,sans-serif;background:var(--cream);color:var(--ink);line-height:1.6;font-weight:300;-webkit-font-smoothing:antialiased}
+a{color:var(--terra)}
+a:hover{color:var(--orange)}
+h1,h2,h3{margin:0;font-family:var(--serif);font-weight:500;color:var(--navy);line-height:1.1}
+.wrap{max-width:1060px;margin:0 auto;padding-inline:clamp(18px,4vw,32px)}
+
+header{background:var(--navy);color:#fff;padding-block:20px}
+header .wrap{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:12px}
+.brand img{width:40px;height:40px}
+.brand .k{font-size:.66rem;font-weight:700;letter-spacing:.2em;color:var(--orange);text-transform:uppercase;display:block}
+.brand .n{font-family:var(--serif);font-size:1.1rem;color:#fff;line-height:1;margin-top:3px;white-space:nowrap}
+.who{font-size:.86rem;color:#b9cadb}
+.who b{color:#fff;font-weight:500}
+
+.page{padding-block:34px 70px}
+.title-row{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:6px}
+h1{font-size:clamp(1.7rem,3.4vw,2.3rem)}
+.sub{color:var(--muted);font-size:.98rem;margin:6px 0 26px}
+
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:28px}
+.stat{background:#fff;border:1px solid var(--line);border-radius:8px;padding:20px 22px}
+.stat b{font-family:var(--serif);font-size:2rem;color:var(--terra);display:block;line-height:1}
+.stat span{font-size:.85rem;color:var(--muted);margin-top:5px;display:block}
+
+.toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:16px}
+.toolbar input,.toolbar select{padding:10px 13px;border:1.5px solid var(--line);border-radius:6px;font-family:inherit;font-size:.92rem;color:var(--ink);background:#fff;font-weight:300}
+.toolbar input{flex:1;min-width:190px}
+.toolbar input:focus,.toolbar select:focus{outline:none;border-color:var(--terra)}
+.btn{font-family:inherit;font-size:.9rem;font-weight:500;padding:10px 18px;border-radius:6px;border:1.5px solid transparent;cursor:pointer;transition:.18s}
+.btn-o{background:transparent;color:var(--navy);border-color:var(--line)}
+.btn-o:hover{border-color:var(--navy)}
+
+.tablebox{background:#fff;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.scroll{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:.93rem;min-width:760px}
+th{text-align:left;font-weight:600;font-size:.76rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);background:var(--sand);padding:13px 16px;border-bottom:1px solid var(--line);white-space:nowrap}
+td{padding:15px 16px;border-bottom:1px solid var(--line);vertical-align:top}
+tr:last-child td{border-bottom:0}
+tbody tr:hover{background:#fdfaf4}
+td .nome{font-weight:500;color:var(--navy);display:block}
+td .msg{color:var(--muted);font-size:.86rem;display:block;margin-top:3px;max-width:34ch}
+td .ct{color:var(--muted);font-size:.86rem;display:block}
+.badge{display:inline-block;font-size:.75rem;font-weight:500;padding:4px 11px;border-radius:999px;white-space:nowrap;background:var(--sand-deep);color:#6b5030}
+.st{display:inline-flex;align-items:center;gap:6px;font-size:.83rem;font-weight:500;white-space:nowrap}
+.st i{width:8px;height:8px;border-radius:50%;display:block}
+.st.novo{color:var(--terra)}.st.novo i{background:var(--terra)}
+.st.contatado{color:#2f6f9e}.st.contatado i{background:#2f6f9e}
+.st.agendado{color:var(--mint)}.st.agendado i{background:var(--mint)}
+td select{font-family:inherit;font-size:.83rem;padding:5px 8px;border:1px solid var(--line);border-radius:5px;background:#fff;color:var(--ink);cursor:pointer}
+.empty{padding:50px 20px;text-align:center;color:var(--muted)}
+.empty b{display:block;font-family:var(--serif);font-size:1.2rem;color:var(--navy);margin-bottom:6px}
+.foot{margin-top:20px;font-size:.85rem;color:var(--muted);display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+@media(max-width:720px){.cards{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <div class="brand"><img src="assets/inspire-a-laranja.svg" alt="" style="width:auto;height:44px"><span><span class="k">Inspire</span><span class="n">Área interna</span></span></div>
+    <span class="who">Olá, <b>equipe Inspire</b> · <a href="index.html" style="color:#b9cadb">sair</a></span>
+  </div>
+</header>
+
+<main class="page">
+  <div class="wrap">
+    <div class="title-row"><h1>Consultas recebidas</h1></div>
+    <p class="sub">Solicitações enviadas pelo formulário do site.</p>
+
+    <div class="cards">
+      <div class="stat"><b id="stTotal">0</b><span>total de solicitações</span></div>
+      <div class="stat"><b id="stNovos">0</b><span>aguardando contato</span></div>
+      <div class="stat"><b id="stAgend">0</b><span>consultas agendadas</span></div>
+    </div>
+
+    <div class="toolbar">
+      <input id="busca" type="text" placeholder="Buscar por nome, e-mail ou telefone...">
+      <select id="filtro">
+        <option value="">Todos os status</option>
+        <option value="novo">Novo</option>
+        <option value="contatado">Contatado</option>
+        <option value="agendado">Agendado</option>
+      </select>
+      <button class="btn btn-o" id="btnLimpar" type="button">Limpar lista</button>
+    </div>
+
+    <div class="tablebox">
+      <div class="scroll">
+        <table>
+          <thead>
+            <tr><th>Data</th><th>Nome / mensagem</th><th>Contato</th><th>Serviço</th><th>Status</th></tr>
+          </thead>
+          <tbody id="tbody"></tbody>
+        </table>
+      </div>
+      <div class="empty" id="vazio" style="display:none"><b>Nenhuma consulta por aqui</b>As solicitações enviadas pelo formulário do site aparecem nesta lista.</div>
+    </div>
+
+    <div class="foot"><span id="contador">0 solicitações</span><span>Inspire · Clínica Integrada</span></div>
+  </div>
+</main>
+
+<script>
+// Exemplos iniciais (usados enquanto ninguém enviou o formulário ainda)
+var exemplos = [
+  {data:"2026-08-08T09:20", nome:"Camila Martins", email:"camila.m@email.com", tel:"(12) 99812-4471", servico:"Avaliação neuropsicológica", msg:"Meu filho tem 7 anos e a escola sugeriu uma avaliação.", status:"novo"},
+  {data:"2026-08-07T15:05", nome:"Rafael Andrade", email:"rafael.a@email.com", tel:"(12) 99640-1180", servico:"Avaliação para adulto", msg:"Gostaria de entender minhas dificuldades de atenção no trabalho.", status:"contatado"},
+  {data:"2026-08-06T11:40", nome:"Juliana Souza", email:"ju.souza@email.com", tel:"(12) 98123-7755", servico:"Alfabetização e reforço", msg:"Minha filha de 6 anos está com dificuldade na leitura.", status:"agendado"},
+  {data:"2026-08-05T18:12", nome:"Patrícia Lima", email:"patricia.lima@email.com", tel:"(12) 99005-3321", servico:"Atendimento para meu filho(a)", msg:"", status:"novo"}
+];
+
+var CHAVE = "inspire_consultas";
+
+function carregar(){
+  var salvos = localStorage.getItem(CHAVE);
+  if(salvos){ return JSON.parse(salvos); }
+  localStorage.setItem(CHAVE, JSON.stringify(exemplos));
+  return exemplos;
+}
+
+function salvar(lista){ localStorage.setItem(CHAVE, JSON.stringify(lista)); }
+
+function formatarData(txt){
+  var d = new Date(txt);
+  if(isNaN(d)) return txt;
+  var dia = ("0"+d.getDate()).slice(-2);
+  var mes = ("0"+(d.getMonth()+1)).slice(-2);
+  var hora = ("0"+d.getHours()).slice(-2)+":"+("0"+d.getMinutes()).slice(-2);
+  return dia+"/"+mes+"/"+d.getFullYear()+"<span class='ct'>"+hora+"</span>";
+}
+
+var consultas = carregar();
+
+function mostrar(){
+  var termo = document.getElementById("busca").value.toLowerCase();
+  var status = document.getElementById("filtro").value;
+  var tbody = document.getElementById("tbody");
+  tbody.innerHTML = "";
+  var visiveis = 0;
+
+  for(var i = 0; i < consultas.length; i++){
+    var c = consultas[i];
+    var texto = (c.nome + " " + c.email + " " + c.tel).toLowerCase();
+    if(termo !== "" && texto.indexOf(termo) === -1) continue;
+    if(status !== "" && c.status !== status) continue;
+    visiveis++;
+
+    var tr = document.createElement("tr");
+    tr.innerHTML =
+      "<td>" + formatarData(c.data) + "</td>" +
+      "<td><span class='nome'>" + c.nome + "</span>" + (c.msg ? "<span class='msg'>" + c.msg + "</span>" : "") + "</td>" +
+      "<td><span class='ct'>" + c.tel + "</span><span class='ct'>" + c.email + "</span></td>" +
+      "<td><span class='badge'>" + c.servico + "</span></td>" +
+      "<td><span class='st " + c.status + "'><i></i>" + c.status + "</span><br>" +
+        "<select data-i='" + i + "' style='margin-top:6px'>" +
+          "<option value='novo'" + (c.status==="novo"?" selected":"") + ">Novo</option>" +
+          "<option value='contatado'" + (c.status==="contatado"?" selected":"") + ">Contatado</option>" +
+          "<option value='agendado'" + (c.status==="agendado"?" selected":"") + ">Agendado</option>" +
+        "</select></td>";
+    tbody.appendChild(tr);
+  }
+
+  document.getElementById("vazio").style.display = visiveis === 0 ? "block" : "none";
+  document.getElementById("contador").textContent = visiveis + (visiveis === 1 ? " solicitação" : " solicitações");
+
+  var novos = 0, agendados = 0;
+  for(var j = 0; j < consultas.length; j++){
+    if(consultas[j].status === "novo") novos++;
+    if(consultas[j].status === "agendado") agendados++;
+  }
+  document.getElementById("stTotal").textContent = consultas.length;
+  document.getElementById("stNovos").textContent = novos;
+  document.getElementById("stAgend").textContent = agendados;
+
+  var selects = tbody.querySelectorAll("select");
+  for(var k = 0; k < selects.length; k++){
+    selects[k].onchange = function(){
+      consultas[this.getAttribute("data-i")].status = this.value;
+      salvar(consultas);
+      mostrar();
+    };
+  }
+}
+
+document.getElementById("busca").oninput = mostrar;
+document.getElementById("filtro").onchange = mostrar;
+document.getElementById("btnLimpar").onclick = function(){
+  if(confirm("Deseja apagar todas as solicitações da lista?")){
+    consultas = [];
+    salvar(consultas);
+    mostrar();
+  }
+};
+
+mostrar();
+</script>
+</body>
+</html>
